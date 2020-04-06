@@ -79,29 +79,27 @@ int main(int argc, char* argv[]) {
         //struct tcp_str *tcp_h; // use libnet_tcp_hdr struct
 
         eth_h = (struct ethernet_str*)packet;
-        ip4_h = (struct ipv4_str*)packet+14;
+        ip4_h = (struct ipv4_str*)(packet+14);
         //tcp_h = (struct tcp_str*)packet;
-
 
         // condition(?) ip header -> tcp header? 0x06 protocol. only tcp packet.
         if ((ip4_h->ip_p) == 0x06) {
 
             // src mac, dst mac / eth_h->ether_shost, eth_h->ether_dhost
-            printf("\n-------------------------------------------------------n");
+            printf("\n------------------------------------------------------\n");
             printf("destination mac : %02X:%02X:%02X:%02X:%02X:%02X\n", eth_h->ether_dhost[0], eth_h->ether_dhost[1], eth_h->ether_dhost[2],
                     eth_h->ether_dhost[3], eth_h->ether_dhost[4], eth_h->ether_dhost[5]);
             printf("source mac      : %02X:%02X:%02X:%02X:%02X:%02X\n", eth_h->ether_shost[0], eth_h->ether_shost[1], eth_h->ether_shost[2],
                     eth_h->ether_shost[3], eth_h->ether_shost[4], eth_h->ether_shost[5]);
-            printf("%04X\n", ntohs(eth_h->type));
+            //printf("%04X\n", ntohs(eth_h->type));
 
-            printf("test\n");
             // src ip, dst ip / ip4_h->ip_src, ip4_h->ip_dst
-            printf("\n-------------------------------------------------------n");
+            //printf("\n------------------------------------------------------\n");
             printf("Source IP      : %s\n", inet_ntoa(ip4_h->ip_src));
             printf("Destination IP : %s\n", inet_ntoa(ip4_h->ip_dst));
 
             // src port_n, dst port_n / tcp_h->th_sport, tcp_h->th_dport
-            printf("\n-------------------------------------------------------n");
+            //printf("\n------------------------------------------------------\n");
             printf("Source Port Number      : \n");
             printf("Destination Port Number : \n");
 
