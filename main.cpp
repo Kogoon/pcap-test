@@ -30,13 +30,15 @@ struct ipv4_str {
     uint8_t ip_ttl;
     uint8_t ip_p;
     uint16_t ip_checksum;
-    struct in_addr ip_src, ip_dst;
+    //struct in_addr ip_src, ip_dst;
+    uint8_t ip_src[4];
+    uint8_t ip_dst[4];
 };
-/*
+
 struct tcp_str {
 
 };
-*/
+
 
 void usage() {
     printf("syntax : pcap-test <interface>\n");
@@ -76,11 +78,11 @@ int main(int argc, char* argv[]) {
         // requirement libnet-headers.h
         struct ethernet_str *eth_h; // use libnet_ethernet_hdr struct in libnet
         struct ipv4_str *ip4_h; // use libnet_ipv4_hdr struct
-        //struct tcp_str *tcp_h; // use libnet_tcp_hdr struct
+        struct tcp_str *tcp_h; // use libnet_tcp_hdr struct
 
         eth_h = (struct ethernet_str*)packet;
         ip4_h = (struct ipv4_str*)(packet+14);
-        //tcp_h = (struct tcp_str*)packet;
+        tcp_h = (struct tcp_str*)(packet+35);
 
         // condition(?) ip header -> tcp header? 0x06 protocol. only tcp packet.
         if ((ip4_h->ip_p) == 0x06) {
@@ -95,8 +97,10 @@ int main(int argc, char* argv[]) {
 
             // src ip, dst ip / ip4_h->ip_src, ip4_h->ip_dst
             //printf("\n------------------------------------------------------\n");
-            printf("Source IP      : %s\n", inet_ntoa(ip4_h->ip_src));
-            printf("Destination IP : %s\n", inet_ntoa(ip4_h->ip_dst));
+            //printf("Source IP      : %s\n", inet_ntoa(ip4_h->ip_src));
+            //printf("Destination IP : %s\n", inet_ntoa(ip4_h->ip_dst));
+            printf("Source IP      : %u.%u.%u.%u\n", ip4_h->ip_src[0], ip4_h->ip_src[1], ip4_h->ip_src[2], ip4_h->ip_src[3]);
+            printf("Destination IP : %u.%u.%u.%u\n", ip4_h->ip_dst[0], ip4_h->ip_dst[1], ip4_h->ip_dst[2], ip4_h->ip_dst[3]);
 
             // src port_n, dst port_n / tcp_h->th_sport, tcp_h->th_dport
             //printf("\n------------------------------------------------------\n");
