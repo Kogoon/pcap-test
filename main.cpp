@@ -6,14 +6,37 @@
  */
 #include <pcap.h> //pcap library
 #include <stdio.h>
-//#include <./libnet/libnet-headers.h> // for libnet structure
+//#include <libnet/libnet-headers.h> // for libnet structure
 #include <stdlib.h> //for exit
 #include <arpa/inet.h> // for inet_ntoa
 //#include <netinet/ip.h> //for ip , iphdr, ip_addr
 #include <libnet.h>
+#include <netinet/in.h> //in_addr
 
 //#define IPv4 0x0800
 //#define ARP 0x0806
+
+struct ethernet_str {
+    uint8_t ether_dhost[6];
+    uint8_t ether_shost[6];
+    uint16_t type;
+};
+
+struct ipv4_str {
+    uint8_t ip_ver_hdrlen; // version 4, headerlength
+    uint16_t ip_total_len;
+    uint16_t ip_id;
+    uint16_t ip_flag;
+    uint8_t ip_ttl;
+    uint8_t ip_p;
+    uint16_t ip_checksum;
+    struct in_addr ip_src, ip_dst;
+};
+/*
+struct tcp_str {
+
+};
+*/
 
 void usage() {
     printf("syntax : pcap-test <interface>\n");
@@ -23,7 +46,7 @@ void usage() {
 int main(int argc, char* argv[]) {
     if(argc != 2){
         usage();
-        return -1;
+        exit(1);
     }
 
     char* dev = argv[1]; // name of device : ex) eth0, wlan0, my device
@@ -51,13 +74,14 @@ int main(int argc, char* argv[]) {
         }
 
         // requirement libnet-headers.h
-        struct libnet_ethernet_hdr *eth_h; // use libnet_ethernet_hdr struct in libnet
-        struct libnet_ipv4_hdr *ip4_h; // use libnet_ipv4_hdr struct
-        struct libnet_tcp_hdr *tcp_h; // use libnet_tcp_hdr struct
+        struct ethernet_str *eth_h; // use libnet_ethernet_hdr struct in libnet
+        struct ipv4_str *ip4_h; // use libnet_ipv4_hdr struct
+        //struct tcp_str *tcp_h; // use libnet_tcp_hdr struct
 
-        eth_h = (struct libnet_ethernet_hdr*)packet;
-        ip4_h = (struct libnet_ipv4_hdr*)packet;
-        tcp_h = (struct libnet_tcp_hdr*)packet;
+        eth_h = (struct ethernet_str*)packet;
+        ip4_h = (struct ipv4_str*)packet+14;
+        //tcp_h = (struct tcp_str*)packet;
+
 
         // condition(?) ip header -> tcp header? 0x06 protocol. only tcp packet.
         if ((ip4_h->ip_p) == 0x06) {
@@ -68,7 +92,9 @@ int main(int argc, char* argv[]) {
                     eth_h->ether_dhost[3], eth_h->ether_dhost[4], eth_h->ether_dhost[5]);
             printf("source mac      : %02X:%02X:%02X:%02X:%02X:%02X\n", eth_h->ether_shost[0], eth_h->ether_shost[1], eth_h->ether_shost[2],
                     eth_h->ether_shost[3], eth_h->ether_shost[4], eth_h->ether_shost[5]);
+            printf("%04X\n", ntohs(eth_h->type));
 
+            printf("test\n");
             // src ip, dst ip / ip4_h->ip_src, ip4_h->ip_dst
             printf("\n-------------------------------------------------------n");
             printf("Source IP      : %s\n", inet_ntoa(ip4_h->ip_src));

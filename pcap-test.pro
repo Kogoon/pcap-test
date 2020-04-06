@@ -3,6 +3,6 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 LIBS += -lpcap
-//LIBS += -llibnet
+HEADERS += ./libnet/libnet_headers.h
 SOURCES += \
         main.cpp
