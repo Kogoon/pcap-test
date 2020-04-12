@@ -105,32 +105,36 @@ int main(int argc, char* argv[]) {
                 struct tcp_str *tcp_h =(struct tcp_str*)(packet+ip_hlen+sizeof(ethernet_str));
                 int tcp_hlen = ((tcp_h->tcp_offR & 0xF0)>>4)*4;
                 //printf("0x%x %d", ((tcp_h->tcp_offR & 0xF0) >>4), tcp_hlen);
-                // src mac, dst mac / eth_h->ether_shost, eth_h->ether_dhost
+
                 printf("\n------------------------------------------------------\n");
                 printf("Destination MAC : ");
                 print_mac(eth_h->ether_dhost);
                 printf("Source MAC : ");
                 print_mac(eth_h->ether_shost);
 
-                // src ip, dst ip / ip4_h->ip_src, ip4_h->ip_dst
                 printf("Source IP : ");
                 print_ip(ip4_h->ip_src);
                 printf("Destination IP : ");
                 print_ip(ip4_h->ip_dst);
 
-                // src port_n, dst port_n / posrt_src, tcp_h->port_dst
-                //printf("\n------------------------------------------------------\n");
-                //printf("%0004X\n", tcp_h->port_src);
-                printf("Source Port Number      : %u\n", ntohs(tcp_h->port_src));
-                printf("Destination Port Number : %u\n", ntohs(tcp_h->port_dst));
+                printf("Source Port Number      : %d\n", ntohs(tcp_h->port_src));
+                printf("Destination Port Number : %d\n", ntohs(tcp_h->port_dst));
 
                 const u_char *data_payload = packet + sizeof(ethernet_str) + ip_hlen + tcp_hlen;
                 int data_len = ntohs(ip4_h->ip_total_len) - tcp_hlen - ip_hlen;
                 if (data_len > 0) {
-                    printf(" Data \n ->");
-                    for (int i=0; i<16; i++) {
-                        printf("%02X ", *data_payload);
-                        data_payload++;
+                    printf("%d", data_len);
+                    printf(" Data \n -> ");
+                    if (data_len < 16) {
+                        for (int i=0; i<data_len; i++) {
+                            printf("%02X ", *data_payload);
+                            data_payload++;
+                        }
+                    } else if (data_len > 16) {
+                        for (int i=0; i<16; i++) {
+                            printf("%02X ", *data_payload);
+                            data_payload++;
+                        }
                     }
                 }
 
