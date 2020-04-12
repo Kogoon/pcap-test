@@ -101,7 +101,6 @@ int main(int argc, char* argv[]) {
             if ((ip4_h->ip_p) == 0x06) {
                 struct tcp_str *tcp_h =(struct tcp_str*)(packet+ip_hlen+sizeof(ethernet_str));
                 int tcp_hlen = ((tcp_h->tcp_offR & 0xF0)>>4)*4;
-                //printf("0x%x %d", ((tcp_h->tcp_offR & 0xF0) >>4), tcp_hlen);
 
                 printf("\n------------------------------------------------------\n");
                 printf("Destination MAC : ");
@@ -120,7 +119,6 @@ int main(int argc, char* argv[]) {
                 const u_char *data_payload = packet + sizeof(ethernet_str) + ip_hlen + tcp_hlen;
                 int data_len = ntohs(ip4_h->ip_total_len) - tcp_hlen - ip_hlen;
                 if (data_len > 0) {
-                    printf("%d", data_len);
                     printf(" Data \n -> ");
                     if (data_len < 16) {
                         for (int i=0; i<data_len; i++) {
