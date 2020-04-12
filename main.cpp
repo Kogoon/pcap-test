@@ -10,7 +10,8 @@
 #include <arpa/inet.h> // for inet_ntoa
 #include <libnet.h>
 #include <netinet/in.h> //in_addr
-
+#include <algorithm> //min
+using namespace std;
 #define ETHERTYPE_IP    0x0800
 
 struct ethernet_str {
@@ -118,18 +119,12 @@ int main(int argc, char* argv[]) {
 
                 const u_char *data_payload = packet + sizeof(ethernet_str) + ip_hlen + tcp_hlen;
                 int data_len = ntohs(ip4_h->ip_total_len) - tcp_hlen - ip_hlen;
+                int print_len = min(data_len, 16);
                 if (data_len > 0) {
                     printf(" Data \n -> ");
-                    if (data_len < 16) {
-                        for (int i=0; i<data_len; i++) {
-                            printf("%02X ", *data_payload);
-                            data_payload++;
-                        }
-                    } else if (data_len > 16) {
-                        for (int i=0; i<16; i++) {
-                            printf("%02X ", *data_payload);
-                            data_payload++;
-                        }
+                    for (int i=0; i<print_len; i++) {
+                        printf("%02X ", *data_payload);
+                        data_payload++;
                     }
                 }
 
