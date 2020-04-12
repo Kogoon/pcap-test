@@ -6,7 +6,6 @@
  */
 #include <pcap.h> //pcap library
 #include <stdio.h>
-//#include <libnet/libnet-headers.h> // for libnet structure
 #include <stdlib.h> //for exit
 #include <arpa/inet.h> // for inet_ntoa
 #include <libnet.h>
@@ -94,13 +93,11 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        // requirement libnet-headers.h
         struct ethernet_str *eth_h = (struct ethernet_str*)packet;
         if (htons(eth_h->type) == ETHERTYPE_IP) {
             struct ipv4_str *ip4_h = (struct ipv4_str*)(packet+sizeof(ethernet_str));
             int ip_hlen = (ip4_h->ip_ver_hdlen & 0x0F)*4;
             // condition(?) ip header -> tcp header? 0x06 protocol. only tcp packet.
-            //printf("%u", ip4_h->ip_ver_hdlen & 0x0F);
             if ((ip4_h->ip_p) == 0x06) {
                 struct tcp_str *tcp_h =(struct tcp_str*)(packet+ip_hlen+sizeof(ethernet_str));
                 int tcp_hlen = ((tcp_h->tcp_offR & 0xF0)>>4)*4;
